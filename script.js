@@ -802,6 +802,7 @@ else{
   <td class="p-2 text-center data-mono">${r[6] ? new Date(r[6]).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}) : "-"}</td>
   <td class="p-2 text-center data-mono">${r[7] ? new Date(r[7]).toLocaleDateString("th-TH") : "-"}</td>
   <td class="p-2 text-center data-mono">${r[8] ? new Date(r[8]).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}) : "-"}</td>
+  <td class="p-2 text-center break-words">${r[9]||"-"}</td>
   <td class="p-3 text-center data-mono">${r[10]||"-"}</td>
   <td class="p-3 text-center">${statusBadge}</td>
   <td class="p-3"><div class="flex gap-2 justify-center">${actionBtns}</div></td>
@@ -1062,6 +1063,7 @@ async function exportPDF() {
         <td>${r[2] || "-"}</td>
         <td>${r[3] || "-"}</td>
         <td>${r[4] || "-"}</td>
+        <td>${r[9] || "-"}</td>
         <td style="color:${statusColor}; font-weight:600;">${r[11] || "รออนุมัติ"}</td>
       </tr>`;
   }).join("");
@@ -1179,6 +1181,7 @@ async function exportPDF() {
             <th>ผู้จอง</th>
             <th>แผนก</th>
             <th>รถ</th>
+            <th>วัตถุประสงค์</th>
             <th>สถานะ</th>
           </tr>
         </thead>
@@ -1320,6 +1323,7 @@ function renderHomeBookingTable(data) {
   <td class="p-3 text-center">${r[2]||"-"}</td>
   <td class="p-2 text-center break-words data-mono">${r[4]||"-"}</td>
   <td class="p-2 text-center data-mono">${r[5] ? new Date(r[5]).toLocaleDateString("th-TH") : "-"}</td>
+  <td class="p-2 text-center break-words">${r[9]||"-"}</td>
   <td class="p-3 text-center">${badge}</td>
 </tr>`;
   });
@@ -1673,6 +1677,7 @@ async function loadPublicBookings() {
   <td class="p-2 text-center data-mono">${r[6] ? new Date(r[6]).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}) : "-"}</td>
   <td class="p-2 text-center data-mono">${r[7] ? new Date(r[7]).toLocaleDateString("th-TH") : "-"}</td>
   <td class="p-2 text-center data-mono">${r[8] ? new Date(r[8]).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}) : "-"}</td>
+  <td class="p-2 text-center break-words">${r[9]||"-"}</td>
   <td class="p-3 text-center data-mono">${r[10]||"-"}</td>
   <td class="p-3 text-center">${badge}</td>
   <td class="p-3 text-center">${cancelBtn}</td>
