@@ -18,10 +18,8 @@ const DEPARTMENT_LIST = ["IT", "HR", "การเงิน", "พัสดุ",
 // รายการรถจริงในระบบ — ต้องตรงกับ <option value="..."> ของ select#car ในฟอร์มจอง
 // เพราะ "car" คือค่าที่ถูกบันทึกไว้ใน Sheet ทุกครั้งที่มีการจอง
 const VEHICLES = [
-  { id: "v1", name: "รถตู้ 1",   plate: "กข-1234", car: "รถตู้ 1 (กข-1234)",   icon: "🚐" },
-  { id: "v2", name: "รถตู้ 2",   plate: "กข-5678", car: "รถตู้ 2 (กข-5678)",   icon: "🚐" },
-  { id: "v3", name: "รถกระบะ 1", plate: "บย-1111", car: "รถกระบะ 1 (บย-1111)", icon: "🛻" },
-  { id: "v4", name: "รถกระบะ 2", plate: "บย-2222", car: "รถกระบะ 2 (บย-2222)", icon: "🛻" }
+  // ว่างเปล่าโดยตั้งใจ — รถทั้งหมดตอนนี้มาจากที่ Admin เพิ่มเอง (เก็บใน localStorage key "customVehicles")
+  // ถ้าต้องการกลับไปมีรถ default ติดมากับระบบ ใส่ object แบบเดิมกลับเข้ามาในนี้ได้
 ];
 
 // ============================================================
@@ -380,6 +378,12 @@ async function departmentLogin() {
 
 function logoutDepartment() {
   localStorage.removeItem("myDepartment");
+  location.reload();
+}
+
+function logoutAdmin() {
+  // สถานะ login ของ admin ไม่ได้ถูกเก็บไว้ใน localStorage (เช็คกับ server ทุกครั้งตอน login)
+  // ดังนั้นการ "ออกจากระบบ" ที่ง่ายและปลอดภัยที่สุดคือรีโหลดหน้าใหม่ กลับไปเริ่มที่หน้าเลือก role
   location.reload();
 }
 
