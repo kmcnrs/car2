@@ -1197,7 +1197,12 @@ function renderVehicleCards() {
     const isMaint = statuses[v.id] === "maintenance";
     return `
     <div class="border ${isMaint ? "border-orange-300 bg-orange-50" : "border-slate-200"} rounded-xl p-4 hover:border-brass transition-colors">
-      <div class="text-4xl text-center">${v.icon}</div>
+      <svg class="w-10 h-10 mx-auto text-navy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/>
+        <rect x="3" y="11" width="18" height="6" rx="2"/>
+        <circle cx="7.5" cy="17.5" r="1.4" fill="currentColor" stroke="none"/>
+        <circle cx="16.5" cy="17.5" r="1.4" fill="currentColor" stroke="none"/>
+      </svg>
       <div class="font-bold text-center mt-2">${v.name}</div>
       <div class="text-center text-sm text-slate-500 data-mono">${v.plate}</div>
       ${isMaint
