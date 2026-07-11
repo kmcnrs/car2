@@ -23,37 +23,40 @@ const VEHICLES = [
 ];
 
 // ============================================================
-// VEHICLE MANAGEMENT STATE — สถานะรถที่ Admin จัดการ (เก็บใน localStorage)
+// VEHICLE MANAGEMENT STATE — เก็บที่ Google Sheet (ชีต "vehicles") ผ่าน Apps Script เดิม
+// ทุกคนที่เปิดเว็บจะเห็นรถชุดเดียวกัน ไม่ผูกกับเบราว์เซอร์ใครคนใดคนหนึ่งอีกต่อไป
 // ============================================================
-// vehicleStatus: { [vehicleId]: "active" | "maintenance" }
-// vehicleList: array ของ VEHICLES ที่ Admin เพิ่มเอง (รวมกับ VEHICLES เริ่มต้น)
+let vehiclesCache = []; // [{id, name, plate, car, icon, status}]
 
-function getVehicleStatuses() {
+async function loadVehiclesFromServer() {
   try {
-    return JSON.parse(localStorage.getItem("vehicleStatuses") || "{}");
-  } catch { return {}; }
+    const res  = await fetch(API_URL + "?type=vehicles", { redirect: "follow" });
+    const rows = await res.json();
+    vehiclesCache = rows.slice(1).map(r => ({
+      id: r[0], name: r[1], plate: r[2], car: r[3], icon: r[4], status: r[5] || "active"
+    }));
+  } catch (err) {
+    console.error("loadVehiclesFromServer error:", err);
+  }
 }
 
-function setVehicleStatus(vehicleId, status) {
-  const statuses = getVehicleStatuses();
-  statuses[vehicleId] = status;
-  localStorage.setItem("vehicleStatuses", JSON.stringify(statuses));
+function getVehicleStatuses() {
+  const statuses = {};
+  vehiclesCache.forEach(v => { statuses[v.id] = v.status || "active"; });
+  return statuses;
 }
 
 function getCustomVehicles() {
-  try {
-    return JSON.parse(localStorage.getItem("customVehicles") || "[]");
-  } catch { return []; }
+  return vehiclesCache;
 }
 
 function getAllVehicles() {
-  const custom = getCustomVehicles();
-  return [...VEHICLES, ...custom];
+  return [...VEHICLES, ...vehiclesCache];
 }
 
 function isVehicleMaintenance(vehicleId) {
-  const statuses = getVehicleStatuses();
-  return statuses[vehicleId] === "maintenance";
+  const v = vehiclesCache.find(v => v.id === vehicleId);
+  return v ? v.status === "maintenance" : false;
 }
 
 // ============================================================
@@ -1762,24 +1765,49 @@ function renderVehicleManagerTable() {
   }).join("");
 }
 
-function toggleVehicleMaintenance(vehicleId, isMaint) {
-  setVehicleStatus(vehicleId, isMaint ? "maintenance" : "active");
+async function toggleVehicleMaintenance(vehicleId, isMaint) {
+  const status = isMaint ? "maintenance" : "active";
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      redirect: "follow",
+      body: JSON.stringify({ action: "setVehicleStatus", id: vehicleId, status })
+    });
+    const result = await res.json();
+    if (!result.success) { alert("อัปเดตสถานะรถไม่สำเร็จ"); return; }
+  } catch (err) {
+    console.error("toggleVehicleMaintenance error:", err);
+    alert("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+    return;
+  }
+  await loadVehiclesFromServer();
   renderVehicleManagerTable();
   loadDashboard();
-  // อัปเดต dropdown ฟอร์มจอง
   updateCarDropdown();
 }
 
-function removeCustomVehicle(vehicleId) {
+async function removeCustomVehicle(vehicleId) {
   if (!confirm("ลบรถนี้ออกจากระบบ?")) return;
-  const customs = getCustomVehicles().filter(v => v.id !== vehicleId);
-  localStorage.setItem("customVehicles", JSON.stringify(customs));
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      redirect: "follow",
+      body: JSON.stringify({ action: "removeVehicle", id: vehicleId })
+    });
+    const result = await res.json();
+    if (!result.success) { alert("ลบรถไม่สำเร็จ"); return; }
+  } catch (err) {
+    console.error("removeCustomVehicle error:", err);
+    alert("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+    return;
+  }
+  await loadVehiclesFromServer();
   renderVehicleManagerTable();
   loadDashboard();
   updateCarDropdown();
 }
 
-function addNewVehicle() {
+async function addNewVehicle() {
   const nameEl  = document.getElementById("newVehicleName");
   const plateEl = document.getElementById("newVehiclePlate");
   const typeEl  = document.getElementById("newVehicleType");
@@ -1791,7 +1819,7 @@ function addNewVehicle() {
   if (!name || !plate) { alert("กรุณากรอกชื่อรถและทะเบียน"); return; }
   if (plate.length < 4) { alert("ทะเบียนรถไม่ถูกต้อง"); return; }
 
-  // ตรวจ ทะเบียนซ้ำ
+  // ตรวจ ทะเบียนซ้ำ (เช็คเบื้องต้นฝั่ง client — เซิร์ฟเวอร์เช็คซ้ำอีกทีให้แน่ใจ)
   const allExisting = getAllVehicles();
   if (allExisting.some(v => v.plate.toLowerCase() === plate.toLowerCase())) {
     alert("ทะเบียนรถนี้มีในระบบแล้ว");
@@ -1799,16 +1827,26 @@ function addNewVehicle() {
   }
 
   const icon = type === "van" ? "🚐" : type === "sedan" ? "🚗" : "🛻";
-  const id   = "cv_" + Date.now();
   const carLabel = `${name} (${plate})`;
 
-  const customs = getCustomVehicles();
-  customs.push({ id, name, plate, car: carLabel, icon });
-  localStorage.setItem("customVehicles", JSON.stringify(customs));
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      redirect: "follow",
+      body: JSON.stringify({ action: "addVehicle", name, plate, car: carLabel, icon })
+    });
+    const result = await res.json();
+    if (!result.success) { alert(result.message || "เพิ่มรถไม่สำเร็จ"); return; }
+  } catch (err) {
+    console.error("addNewVehicle error:", err);
+    alert("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+    return;
+  }
 
   nameEl.value  = "";
   plateEl.value = "";
 
+  await loadVehiclesFromServer();
   renderVehicleManagerTable();
   loadDashboard();
   updateCarDropdown();
@@ -1922,6 +1960,7 @@ window.onload = async () => {
     document.getElementById("department").disabled = true;
   }
 
+  await loadVehiclesFromServer();
   updateCarDropdown();
 
   // ผูก event ตรวจ conflict เมื่อกรอกฟอร์ม
