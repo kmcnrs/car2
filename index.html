@@ -319,7 +319,7 @@
           <!-- Add new vehicle -->
           <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 mb-5">
             <h3 class="font-semibold text-slate-700 mb-3">➕ เพิ่มรถใหม่</h3>
-            <div class="grid md:grid-cols-4 gap-3 items-end">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label class="block text-xs text-slate-500 mb-1">ชื่อรถ</label>
                 <input id="newVehicleName" type="text" placeholder="เช่น รถตู้ 3"
@@ -330,11 +330,19 @@
                 <input id="newVehiclePlate" type="text" placeholder="เช่น กค-9999"
                   class="border border-slate-300 p-2 rounded-lg w-full text-sm data-mono focus:outline-none focus:ring-2 focus:ring-brass">
               </div>
-              <button onclick="addNewVehicle()"
-                class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-lg text-sm font-medium shadow">
-                เพิ่มรถ
-              </button>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">ประเภทรถ</label>
+                <select id="newVehicleType" class="border border-slate-300 p-2 rounded-lg w-full text-sm focus:outline-none focus:ring-2 focus:ring-brass">
+                  <option value="van">รถตู้ 🚐</option>
+                  <option value="pickup">รถกระบะ 🛻</option>
+                  <option value="sedan">รถเก๋ง 🚗</option>
+                </select>
+              </div>
             </div>
+            <button onclick="addNewVehicle()"
+              class="mt-3 w-full sm:w-auto sm:ml-auto sm:block bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-lg text-sm font-medium shadow">
+              เพิ่มรถ
+            </button>
           </div>
 
           <!-- Vehicle list table -->
@@ -465,22 +473,11 @@
           <select id="department"
             class="border border-slate-300 p-3 rounded-lg w-full mt-3 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-brass">
             <option value="">เลือกแผนก</option>
-            <option>ธุรการฟาร์ม</option>
-            <option>เจ้าหน้าที่ความปลอดภัยในการทำงาน/option>
-            <option>บุคคล-ธุรการ</option>
-            <option>ทั่วไป</option>
-            <option>สัตวแพทย์</option>
-            <option>เจ้าหน้าที่สิ่งแวดล้อม</option>
-            <option>วิชาการ</option>
-            <option>บัญชี</option>
-            <option>บัญชีสวัสดิการ</option>
-            <option>บัญชีการเงิน</option>
-            <option>บัญชี-สโตร์</option>
-            <option>พัฒนาระบบ</option>
-            <option>จัดซื้อ</option>
-            <option>เทคโนโลยีสารสนเทศ</option>
-            <option>ERP</option>
-
+            <option>IT</option>
+            <option>HR</option>
+            <option>การเงิน</option>
+            <option>พัสดุ</option>
+            <option>วิจัย</option>
           </select>
 
           <select id="car" class="border border-slate-300 p-3 rounded-lg w-full mt-3 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-brass">
