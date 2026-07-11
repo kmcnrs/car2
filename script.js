@@ -789,35 +789,11 @@ if (r[11] === "รออนุมัติ" || !r[11]) {
 }
 else if (r[11] === "อนุมัติ") {
 
-  if (r[18] === "ยังไม่รับรถ") {
-
-    actionBtns = `
-      <button onclick="receiveCar('${r[0]}')"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md">
-        🚗 รับรถ
-      </button>
-    `;
-
-  }
-  else if (r[18] === "กำลังใช้งาน") {
-
-    actionBtns = `
-      <button onclick="returnCar('${r[0]}')"
-        class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md">
-        ↩ คืนรถ
-      </button>
-    `;
-
-  }
-  else {
-
-    actionBtns = `
-      <span class="text-green-700 font-bold">
-      ✅ คืนรถแล้ว
-      </span>
-    `;
-
-  }
+  actionBtns = `
+    <span class="text-green-700 font-bold">
+    ✅ อนุมัติแล้ว
+    </span>
+  `;
 
 }
 else{
@@ -900,84 +876,10 @@ async function approveBooking(id){
 
 }
 
-async function receiveCar(id){
-
-    await fetch(API_URL,{
-
-        method:"POST",
-
-        body:JSON.stringify({
-
-            action:"receive",
-
-            id:id
-
-        })
-
-    });
-
-    loadBookings();
-
-    loadDashboard();
-
-}
-
-async function returnCar(id){
-
-    await fetch(API_URL,{
-
-        method:"POST",
-
-        body:JSON.stringify({
-
-            action:"return",
-
-            id:id
-
-        })
-
-    });
-
-    loadBookings();
-
-    loadDashboard();
-
-}
-
 async function approve(id) {
   await fetch(API_URL, { method:"POST", body:JSON.stringify({ action:"update", id, status:"อนุมัติ" }) });
   loadBookings();
   loadDashboard();
-}
-
-async function receiveCar(id){
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-            action:"receive",
-            id:id
-        })
-    });
-
-    loadBookings();
-    loadDashboard();
-
-}
-
-async function returnCar(id){
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-            action:"return",
-            id:id
-        })
-    });
-
-    loadBookings();
-    loadDashboard();
-
 }
 
 // ============================================================
