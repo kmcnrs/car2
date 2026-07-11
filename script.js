@@ -1844,11 +1844,9 @@ async function removeCustomVehicle(vehicleId) {
 async function addNewVehicle() {
   const nameEl  = document.getElementById("newVehicleName");
   const plateEl = document.getElementById("newVehiclePlate");
-  const typeEl  = document.getElementById("newVehicleType");
 
   const name  = nameEl.value.trim();
   const plate = plateEl.value.trim();
-  const type  = typeEl.value;
 
   if (!name || !plate) { alert("กรุณากรอกชื่อรถและทะเบียน"); return; }
   if (plate.length < 4) { alert("ทะเบียนรถไม่ถูกต้อง"); return; }
@@ -1860,7 +1858,7 @@ async function addNewVehicle() {
     return;
   }
 
-  const icon = type === "van" ? "🚐" : type === "sedan" ? "🚗" : "🛻";
+  const icon = "🚗"; // ตัดตัวเลือกประเภทรถออกแล้ว ใช้ไอคอนเดียวกันหมด
   const carLabel = `${name} (${plate})`;
 
   try {
