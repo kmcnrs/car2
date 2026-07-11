@@ -497,7 +497,7 @@ async function saveBooking() {
     endDate:            document.getElementById("endDate").value,
     endTime:            document.getElementById("endTime").value,
     purpose:            document.getElementById("purpose").value,
-    passenger:          document.getElementById("passenger").value,
+    passenger:          "", // ตัดช่องจำนวนผู้โดยสารออกจากฟอร์มแล้ว — ส่งค่าว่างไว้เพื่อไม่ให้คอลัมน์อื่นใน Sheet เลื่อนตำแหน่ง
     bookingPasswordHash // ⚠️ ต้องแก้ Apps Script (backend) ให้บันทึกค่านี้ลง Sheet ด้วย — ดูคำแนะนำท้ายไฟล์
   };
 
@@ -840,7 +840,6 @@ else{
   <td class="p-2 text-center data-mono">${r[7] ? new Date(r[7]).toLocaleDateString("th-TH") : "-"}</td>
   <td class="p-2 text-center data-mono">${r[8] ? new Date(r[8]).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}) : "-"}</td>
   <td class="p-2 text-center break-words">${r[9]||"-"}</td>
-  <td class="p-3 text-center data-mono">${r[10]||"-"}</td>
   <td class="p-3 text-center">${statusBadge}</td>
   <td class="p-3"><div class="flex gap-2 justify-center">${actionBtns}</div></td>
 </tr>`;
@@ -1715,7 +1714,6 @@ async function loadPublicBookings() {
   <td class="p-2 text-center data-mono">${r[7] ? new Date(r[7]).toLocaleDateString("th-TH") : "-"}</td>
   <td class="p-2 text-center data-mono">${r[8] ? new Date(r[8]).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"}) : "-"}</td>
   <td class="p-2 text-center break-words">${r[9]||"-"}</td>
-  <td class="p-3 text-center data-mono">${r[10]||"-"}</td>
   <td class="p-3 text-center">${badge}</td>
   <td class="p-3 text-center">${cancelBtn}</td>
 </tr>`;
