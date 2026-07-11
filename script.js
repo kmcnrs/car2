@@ -102,11 +102,10 @@ async function checkConflictOnForm() {
     return;
   }
 
-  const newStart = combineDateTime(startDateEl.value + "T00:00:00", startTimeEl.value ? `1970-01-01T${startTimeEl.value}:00` : null) ||
-    new Date(startDateEl.value + "T" + startTimeEl.value);
-  const newEnd   = new Date(endDateEl.value + "T" + endTimeEl.value);
+  const newStart = parseDateTime(startDateEl.value, startTimeEl.value);
+  const newEnd   = parseDateTime(endDateEl.value, endTimeEl.value);
 
-  if (isNaN(newStart) || isNaN(newEnd) || newStart >= newEnd) {
+  if (!newStart || !newEnd || newStart >= newEnd) {
     warnEl.classList.add("hidden");
     return;
   }
@@ -464,9 +463,9 @@ async function saveBooking() {
     return;
   }
 
-  const newStart = new Date(startDate + "T" + startTime);
-  const newEnd   = new Date(endDate   + "T" + endTime);
-  if (isNaN(newStart) || isNaN(newEnd) || newStart >= newEnd) {
+  const newStart = parseDateTime(startDate, startTime);
+  const newEnd   = parseDateTime(endDate, endTime);
+  if (!newStart || !newEnd || newStart >= newEnd) {
     alert("วันที่/เวลาไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
     return;
   }
@@ -1165,6 +1164,17 @@ function combineDateTime(dateVal, timeVal) {
   return combined;
 }
 
+// แปลง "YYYY-MM-DD" + "HH:mm" (ค่าจาก <input type="date"> / <input type="time">) เป็น Date
+// แยกตัวเลขมาประกอบเองตรงๆ แทนการต่อ string แล้วให้ Date parse เอา — กันปัญหา parse พลาดข้าม browser
+function parseDateTime(dateStr, timeStr) {
+  if (!dateStr || !timeStr) return null;
+  const [y, m, d]   = dateStr.split("-").map(Number);
+  const [hh, mm]    = timeStr.split(":").map(Number);
+  if (!y || !m || !d || isNaN(hh) || isNaN(mm)) return null;
+  const result = new Date(y, m - 1, d, hh, mm, 0, 0);
+  return isNaN(result) ? null : result;
+}
+
 // เช็คว่ารถคันนี้ "กำลังใช้งาน" อยู่ ณ ขณะนี้หรือไม่
 // เงื่อนไข: ต้องเป็นการจองที่ "อนุมัติ" แล้ว และเวลาปัจจุบันอยู่ในช่วงเริ่มใช้งาน-คืนรถ
 function isVehicleInUse(bookings, vehicleCar) {
@@ -1838,9 +1848,9 @@ async function updateCarAvailability() {
     return;
   }
 
-  const newStart = new Date(startDateEl.value + "T" + startTimeEl.value);
-  const newEnd   = new Date(endDateEl.value + "T" + endTimeEl.value);
-  if (isNaN(newStart) || isNaN(newEnd) || newStart >= newEnd) return;
+  const newStart = parseDateTime(startDateEl.value, startTimeEl.value);
+  const newEnd   = parseDateTime(endDateEl.value, endTimeEl.value);
+  if (!newStart || !newEnd || newStart >= newEnd) return;
 
   let rows = [];
   try {
