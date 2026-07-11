@@ -1679,7 +1679,6 @@ function renderVehicleManagerTable() {
     const isCustom = !VEHICLES.find(bv => bv.id === v.id);
     return `
 <tr class="border-b border-slate-200 hover:bg-slate-50 ${isMaint ? "bg-orange-50" : ""}">
-  <td class="p-3 text-center text-2xl">${v.icon}</td>
   <td class="p-3 font-medium">${v.name}</td>
   <td class="p-3 text-center data-mono text-slate-600">${v.plate}</td>
   <td class="p-3 text-center">
