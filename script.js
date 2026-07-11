@@ -239,10 +239,44 @@ async function hashPassword(text) {
 // ============================================================
 function showUser() {
   console.log("User clicked");
-  document.getElementById("loginPanel").classList.remove("hidden");
+  document.getElementById("loginPanel").classList.add("hidden"); // ไม่ใช้ gate รหัสแผนกแล้ว
   document.getElementById("adminLoginPanel").classList.add("hidden");
   document.getElementById("adminPanel").classList.add("hidden");
   document.getElementById("homeDashboard").classList.add("hidden");
+  document.getElementById("userPanel").classList.remove("hidden");
+  document.getElementById("roleButtons").classList.add("hidden");
+
+  // เติมแผนกล่าสุดที่เคยกรอกไว้ให้อัตโนมัติ (แค่ความสะดวก ไม่ใช่ login เดี๋ยวแก้เองได้)
+  const lastDept = localStorage.getItem("myDepartment");
+  if (lastDept) document.getElementById("department").value = lastDept;
+
+  // ถ้ามาจากการกด "จองรถวันนี้" ในปฏิทิน ให้เติมวันที่ที่เลือกไว้ลงฟอร์มทันที
+  if (pendingCalendarDate) {
+    const startDateEl = document.getElementById("startDate");
+    const endDateEl   = document.getElementById("endDate");
+    const carEl       = document.getElementById("car");
+    if (startDateEl) startDateEl.value = pendingCalendarDate;
+    if (endDateEl)   endDateEl.value   = pendingCalendarDate;
+
+    // pre-select รถคันแรกที่ว่างในวันนั้น (ถ้ามี) — ผู้ใช้ยังเปลี่ยนเป็นคันอื่นเองได้
+    const available = getAvailableVehiclesForDay(pendingCalendarDate);
+    if (carEl && available.length > 0) {
+      updateCarDropdown();
+      carEl.value = available[0].car;
+    } else if (available.length === 0) {
+      alert("วันนี้รถทุกคันถูกจองหรือปิดซ่อมบำรุงหมดแล้ว กรุณาเลือกรถที่ต้องการเองหรือเปลี่ยนวันที่");
+    }
+
+    pendingCalendarDate = null;
+
+    setTimeout(() => {
+      if (carEl) carEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (typeof checkConflictOnForm === "function") checkConflictOnForm();
+      if (typeof updateCarAvailability === "function") updateCarAvailability();
+    }, 100);
+  }
+
+  loadPublicBookings();
 }
 
 function showAdminLogin() {
@@ -1956,8 +1990,7 @@ window.onload = async () => {
     document.getElementById("userPanel").classList.remove("hidden");
     document.getElementById("homeDashboard").classList.add("hidden");
     document.getElementById("roleButtons").classList.add("hidden");
-    document.getElementById("department").value    = dept;
-    document.getElementById("department").disabled = true;
+    document.getElementById("department").value = dept; // แค่เติมให้สะดวก ไม่ล็อค แก้เองได้
   }
 
   await loadVehiclesFromServer();
